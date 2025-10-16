@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SilentConnect — Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="splash" class="screen splash">
+  <div class="splash-center">
+    <div class="logo-circle">
+      <div class="logo-inner"></div>
+    </div>
+    <h1>SilentConnect</h1>
+    <p class="tagline">Connecting Beyond Words</p>
+  </div>
+  <svg class="splash-wave" viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.08)"></path>
+  </svg>
+</div>
+
+<div id="app" class="app hidden">
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="brand-title">
+          <div class="brand-name">SilentConnect</div>
+          <div class="brand-tag">Connecting Beyond Words</div>
+        </div>
+
+        <button class="icon-btn" id="btn-about" title="About" aria-label="About">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="white" />
+            <path d="M4 20c0-3.314 2.686-6 6-6h4c3.314 0 6 2.686 6 6v0H4z" fill="white" opacity="0.95"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <section id="home" class="view">
+      <div class="welcome">Welcome back!</div>
+      <div class="sub muted">Choose how you would like to communicate today</div>
+
+      <div class="cards">
+        <div class="card card-action" data-screen="speech-to-symbols">
+          <div class="icon">🎤</div>
+          <div>
+            <h4>Speech to Symbols</h4>
+            <p class="muted">Convert speech to visual symbols</p>
+          </div>
+        </div>
+
+        <div class="card card-action" data-screen="symbols-to-voice">
+          <div class="icon">🔊</div>
+          <div>
+            <h4>Symbols to Voice</h4>
+            <p class="muted">Transform symbols into speech</p>
+          </div>
+        </div>
+
+        <div class="card card-action" data-screen="ai-knowledge">
+          <div class="icon">🧠</div>
+          <div>
+            <h4>AI Knowledge</h4>
+            <p class="muted">Smart tips and assistance</p>
+          </div>
+        </div>
+
+        <div class="card card-action" data-screen="settings">
+          <div class="icon">⚙️</div>
+          <div>
+            <h4>Settings</h4>
+            <p class="muted">Customize your experience</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button id="btn-listen" class="btn primary action-wide">🎤 Start Listening</button>
+        <button id="btn-live" class="btn outline action-wide">📷 Live Sign Detection</button>
+      </div>
+
+      <div class="extra-row">
+        <button id="btn-symbols" class="btn ghost">🗂️ Symbols</button>
+      </div>
+    </section>
+    
+    <section id="speech-to-symbols" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+
+      <h3>Speech to Symbols</h3>
+      <p class="muted">Speak and see symbols appear</p>
+
+      <div class="panel">
+        <h4>Recognized Symbols</h4>
+        <div id="symbols-area" class="symbols-box">Symbols will appear here as you speak</div>
+      </div>
+
+      <div class="wave-wrap">
+        <div id="wave" class="wave"></div>
+      </div>
+
+      <div class="center-actions">
+        <button id="mic-toggle" class="circle-btn">🎤</button>
+        <div id="status" class="small-muted">Ready to listen</div>
+      </div>
+    </section>
+
+    <section id="symbols-to-voice" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <h3>Symbols to Voice</h3>
+      <p class="muted">Pick symbols to build a message</p>
+
+      <div class="panel">
+        <div class="symbol-grid">
+          <button class="symbol">👋<span>hello</span></button>
+          <button class="symbol">🙏<span>thank you</span></button>
+          <button class="symbol">✋<span>help</span></button>
+          <button class="symbol">🏠<span>home</span></button>
+          <button class="symbol">☕<span>coffee</span></button>
+        </div>
+        <div id="constructed-text" class="constructed muted">Selected phrase will appear here</div>
+        <div class="mt-12">
+          <button id="speak-symbols" class="btn primary">🔊 Speak</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="ai-knowledge" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <h3>AI Knowledge</h3>
+      <p class="muted">Learn and get smart assistance</p>
+
+      <div class="tabs">
+        <div class="tabs-head">
+          <button class="tab active" data-tab="tips">Tips</button>
+          <button class="tab" data-tab="emergency">Emergency</button>
+          <button class="tab" data-tab="signs">Signs</button>
+        </div>
+
+        <div class="tabs-body">
+          <div class="tab-content" id="tips">
+            <div class="card-small">
+              <strong>Use Clear Gestures</strong>
+              <p class="muted">Make sure your hand movements are clear and well-lit for better recognition.</p>
+            </div>
+            <div class="card-small">
+              <strong>Practice Daily</strong>
+              <p class="muted">Regular practice helps improve communication speed and accuracy.</p>
+            </div>
+          </div>
+
+          <div class="tab-content hidden" id="emergency">
+            <div class="card-small">
+              <strong>I need medical help</strong>
+              <div class="tags"><span>help</span><span>hospital</span><span>urgent</span></div>
+            </div>
+            <div class="card-small">
+              <strong>Call someone for me</strong>
+              <div class="tags"><span>call</span><span>help</span></div>
+            </div>
+          </div>
+
+          <div class="tab-content hidden" id="signs">
+            <div class="card-small">
+              <strong>Hello</strong>
+              <p class="muted">Wave your hand with palm facing forward</p>
+            </div>
+            <div class="card-small">
+              <strong>Thank You</strong>
+              <p class="muted">Touch your chin and move hand forward</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="ai-assistant" class="fab">🤖</button>
+      <div id="assistant-popup" class="assistant hidden">
+        <h4>AI Assistant</h4>
+        <p class="muted">Hi! I'm here to help. What would you like assistance with?</p>
+        <div class="assistant-actions">
+          <button class="btn ghost">Learn new signs</button>
+          <button class="btn ghost">Practice phrases</button>
+          <button class="btn ghost">Get tips</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="live-sign-detection" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <h3>Live Sign Detection</h3>
+      <p class="muted">Real-time sign language translation</p>
+
+      <div class="panel">
+        <div id="camera-area" class="camera-area">
+          <div id="camera-demo" class="camera-demo">
+            <div class="camera-overlay">
+              <div class="focus-ring">✋</div>
+            </div>
+            <div class="demo-label">DEMO MODE</div>
+          </div>
+        </div>
+
+        <div class="detection-box">
+          <strong>Detected Text</strong>
+          <div id="detected-text" class="detected muted">Start camera to begin detection</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="start-camera" class="btn primary">📷 Start Detection</button>
+        <button id="stop-camera" class="btn ghost hidden">⏹ Stop</button>
+        <button id="reset-detection" class="btn outline hidden">↻ Reset</button>
+      </div>
+
+      <div class="tips card-small">
+        <strong>Tips for Better Detection</strong>
+        <ul class="muted">
+          <li>Ensure good lighting and clear background</li>
+          <li>Keep hands within the camera frame</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="settings" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <h3>Settings</h3>
+      <p class="muted">Customize your experience</p>
+
+      <div class="panel">
+        <div class="setting-row">
+          <label>Primary Language</label>
+          <select id="lang-select"><option value="english">English</option><option value="arabic">Arabic</option><option value="french">French</option></select>
+        </div>
+
+        <div class="setting-row">
+          <label>Dark Mode</label>
+          <input type="checkbox" id="dark-mode">
+        </div>
+
+        <div class="setting-row">
+          <label>Font Size</label>
+          <input id="font-size" type="range" min="12" max="22" value="16">
+          <span id="font-size-val">16</span>px
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <h3>About SilentConnect</h3>
+      <p class="muted">Connecting Beyond Barriers</p>
+
+      <div class="panel">
+        <h4>Team</h4>
+        <ul>
+          <li>Rahma Ibrahim — Concept & Research</li>
+          <li>Dina Gehad — Concept & Research</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
