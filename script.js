@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const splash = document.getElementById('splash');
   const app = document.getElementById('app');
-  const splashDelay = 1400; 
+  const splashDelay = 1400;
+
   const startNow = () => {
-    splash.classList.add('hidden');
-    app.classList.remove('hidden');
+    if (splash) splash.classList.add('hidden');
+    if (app) app.classList.remove('hidden');
     showView('home');
   };
 
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('hidden');
+
     const title = document.getElementById('screen-title');
     const sub = document.getElementById('screen-sub');
     const map = {
@@ -27,13 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
       'about': ['About SilentConnect','Learn more about the project']
     };
     if (map[id]) {
-      title.textContent = map[id][0];
-      sub.textContent = map[id][1];
+      if (title) title.textContent = map[id][0];
+      if (sub) sub.textContent = map[id][1];
     }
     window.scrollTo(0,0);
   }
 
-  
   document.querySelectorAll('.card-action').forEach(c => {
     c.addEventListener('click', (e) => {
       const target = e.currentTarget.dataset.screen;
@@ -41,29 +42,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.getElementById('btn-listen').addEventListener('click', () => showView('speech-to-symbols'));
-  document.getElementById('btn-live').addEventListener('click', () => showView('live-sign-detection'));
-  document.getElementById('btn-symbols').addEventListener('click', () => showView('symbols-to-voice'));
-  document.getElementById('btn-about').addEventListener('click', () => showView('about'));
+  const btnListen = document.getElementById('btn-listen');
+  const btnLive = document.getElementById('btn-live');
+  const btnSymbols = document.getElementById('btn-symbols');
+  const btnAbout = document.getElementById('btn-about');
+
+  if (btnListen) btnListen.addEventListener('click', () => showView('speech-to-symbols'));
+  if (btnLive) btnLive.addEventListener('click', () => showView('live-sign-detection'));
+  if (btnSymbols) btnSymbols.addEventListener('click', () => showView('symbols-to-voice'));
+  if (btnAbout) btnAbout.addEventListener('click', () => showView('about'));
 
   document.querySelectorAll('[data-back]').forEach(b => {
     b.addEventListener('click', () => showView('home'));
   });
 
   const micToggle = document.getElementById('mic-toggle');
-  const symbolsArea = document.getElementById('symbols-area');
+  const symbolsArea = document.getElementById('symbols-area'); 
   const status = document.getElementById('status');
   const waveBars = document.getElementById('wave');
 
-  if (waveBars) {
+  if (waveBars && waveBars.children.length === 0) {
     for (let i=0;i<20;i++){
       const d = document.createElement('div');
       waveBars.appendChild(d);
     }
   }
-
-  let listening = false;
-  let mockTimers = [];
 
   function animateWave(active){
     const bars = document.querySelectorAll('#wave > div');
@@ -79,51 +82,102 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  
+  let listening = false;
+  let mockTimers = [];
+  let mockIntervalHandle = null;
+
   function startMockRecognition(){
+    if (listening) return;
     listening = true;
-    status.textContent = 'Listening...';
-    symbolsArea.textContent = '';
+    if (status) status.textContent = 'Listening...';
+    if (symbolsArea) {
+      symbolsArea.innerHTML = '';
+      
+      symbolsArea.style.position = symbolsArea.style.position || 'relative';
+    }
     animateWave(true);
+
     const seq = [
       {text:'hello', delay:800},
       {text:'I need help', delay:1800},
       {text:'going home', delay:3000}
     ];
-    seq.forEach((s, idx) => {
+
+    seq.forEach((s) => {
       const t = setTimeout(()=> {
         appendSymbols(s.text);
       }, s.delay);
       mockTimers.push(t);
     });
+
+    
     mockTimers.push(setTimeout(()=> { stopMockRecognition(); }, 4200));
-    mockTimers.push(setInterval(()=>{ if(listening) animateWave(true); }, 150));
+
+    
+    mockIntervalHandle = setInterval(()=>{ if(listening) animateWave(true); }, 150);
   }
 
+  
   function appendSymbols(text){
-    const words = text.split(' ');
-    const container = document.createElement('div');
-    container.className = 'symbols-row';
-    words.forEach(w=>{
-      const btn = document.createElement('div');
-      btn.className = 'symbol-pill';
+    if (!symbolsArea) return;
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+
+    words.forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'symbol-item clickable'; 
+      const lw = w.toLowerCase();
+
+      
       let emoji = '🔤';
-      if (w.includes('hello')) emoji='👋';
-      if (w.includes('help')) emoji='✋';
-      if (w.includes('home')) emoji='🏠';
-      if (w.includes('coffee')) emoji='☕';
-      btn.innerHTML = `<div class="pill-icon">${emoji}</div><div class="pill-word">${w}</div>`;
-      container.appendChild(btn);
+      if (lw.includes('hello') || lw === 'hi') emoji = '👋';
+      else if (lw.includes('thank')) emoji = '🙏';
+      else if (lw.includes('help')) emoji = '✋';
+      else if (lw.includes('home')) emoji = '🏠';
+      else if (lw.includes('coffee')) emoji = '☕';
+      else if (lw.includes('car')) emoji = '🚗';
+      else if (lw.includes('water')) emoji = '💧';
+      else if (lw.includes('food') || lw.includes('eat')) emoji = '🍎';
+      else if (lw.includes('sleep')) emoji = '🛌';
+      else if (lw.includes('doctor')|| lw.includes('hospital')) emoji = '👨‍⚕';
+      else if (lw.includes('call')) emoji = '📞';
+      else if (lw.includes('urgent') || lw.includes('emergency')) emoji = '❗';
+      else if (lw.includes('going') || lw.includes('go')) emoji = '➡';
+    
+      item.innerHTML = `<div class="symbol-emoji">${emoji}</div><div class="symbol-label">${w}</div>`;
+    
+      
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(6px)';
+      symbolsArea.appendChild(item);
+
+      
+      requestAnimationFrame(() => {
+        item.style.transition = 'all 220ms ease';
+        item.style.opacity = '1';
+        item.style.transform = 'translateY(0)';
+      });
+
+      
+      item.addEventListener('click', () => {
+        showTempLabel(w);
+       
+      });
     });
-    symbolsArea.appendChild(container);
+
+    
+    if (symbolsArea.scrollWidth > symbolsArea.clientWidth) {
+      symbolsArea.scrollLeft = symbolsArea.scrollWidth;
+    }
   }
 
   function stopMockRecognition(){
     listening = false;
-    status.textContent = 'Ready to listen';
+    if (status) status.textContent = 'Ready to listen';
     animateWave(false);
     mockTimers.forEach(t=>clearTimeout(t));
     mockTimers = [];
-   
+    if (mockIntervalHandle) { clearInterval(mockIntervalHandle); mockIntervalHandle = null; }
   }
 
   if (micToggle) micToggle.addEventListener('click', ()=>{
@@ -131,16 +185,60 @@ document.addEventListener('DOMContentLoaded', () => {
     else stopMockRecognition();
   });
 
-  const symbolButtons = document.querySelectorAll('.symbol');
+  
+  function showTempLabel(text){
+    if (!symbolsArea) return;
+    const flash = document.createElement('div');
+    flash.className = 'symbol-flash';
+    flash.textContent = text;
+    
+    Object.assign(flash.style, {
+      position: 'absolute',
+      left: '50%',
+      top: '-32px',
+      transform: 'translateX(-50%)',
+      background: 'rgba(0,74,173,0.95)',
+      color: 'white',
+      padding: '6px 10px',
+      borderRadius: '999px',
+      fontSize: '13px',
+      boxShadow: '0 8px 24px rgba(0,74,173,0.12)',
+      opacity: '0',
+      transition: 'all 260ms ease'
+    });
+    symbolsArea.appendChild(flash);
+    requestAnimationFrame(()=> {
+      flash.style.opacity = '1';
+      flash.style.top = '-48px';
+    });
+    setTimeout(()=> {
+      flash.style.opacity = '0';
+      flash.style.top = '-32px';
+      setTimeout(()=> flash.remove(), 260);
+    }, 900);
+  }
+
+  
+  const symbolButtons = Array.from(document.querySelectorAll('.symbol'));
   const constructed = document.getElementById('constructed-text');
   const speakBtn = document.getElementById('speak-symbols');
   let constructedPhrase = [];
 
-  symbolButtons.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const word = btn.textContent.trim();
-      constructedPhrase.push(word);
-      if (constructed) constructed.textContent = constructedPhrase.join(' ');
+  function addToConstructed(word){
+    constructedPhrase.push(word);
+    if (constructed) constructed.textContent = constructedPhrase.join(' ');
+  }
+
+  
+  symbolButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      
+      const labelNode = btn.querySelector('.sym-text');
+      const word = (labelNode && labelNode.textContent) ? labelNode.textContent.trim() : btn.textContent.trim();
+      addToConstructed(word);
+      
+      btn.classList.add('active');
+      setTimeout(()=> btn.classList.remove('active'), 220);
     });
   });
 
@@ -155,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  
   document.querySelectorAll('.tabs-head .tab').forEach(tab=>{
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tabs-head .tab').forEach(t=>t.classList.remove('active'));
@@ -166,51 +265,116 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  
   const assistantBtn = document.getElementById('ai-assistant');
   const assistantPopup = document.getElementById('assistant-popup');
   if (assistantBtn) assistantBtn.addEventListener('click', ()=>{
-    assistantPopup.classList.toggle('hidden');
+    if (assistantPopup) assistantPopup.classList.toggle('hidden');
   });
 
-  const startCamera = document.getElementById('start-camera');
-  const stopCamera = document.getElementById('stop-camera');
-  const resetDetection = document.getElementById('reset-detection');
+  
+  const startCameraBtn = document.getElementById('start-camera');
+  const stopCameraBtn = document.getElementById('stop-camera');
+  const resetDetectionBtn = document.getElementById('reset-detection');
   const detectedText = document.getElementById('detected-text');
 
   let detectionIndex = 0;
   let detectionInterval = null;
   const demoSequence = ["Hello","Thank you","Help me","I need assistance","Good morning"];
 
-  if (startCamera) startCamera.addEventListener('click', ()=>{
-    startCamera.classList.add('hidden');
-    stopCamera.classList.remove('hidden');
-    resetDetection.classList.remove('hidden');
-    if (detectedText) detectedText.textContent = 'Demo AI analyzing...';
-    detectionIndex = 0;
-    detectionInterval = setInterval(()=>{
-      if (detectionIndex < demoSequence.length) {
-        if (detectedText) detectedText.textContent = demoSequence[detectionIndex];
-        detectionIndex++;
-      } else {
-        clearInterval(detectionInterval);
-        if (detectedText) detectedText.textContent = 'Finished (demo)';
+  if (startCameraBtn) startCameraBtn.addEventListener('click', async ()=> {
+   
+    startCameraBtn.classList.add('hidden');
+    if (stopCameraBtn) stopCameraBtn.classList.remove('hidden');
+    if (resetDetectionBtn) resetDetectionBtn.classList.remove('hidden');
+
+    
+    let usingDemo = true;
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        
+        const cameraArea = document.getElementById('camera-area');
+        
+        const demoEl = document.getElementById('camera-demo');
+        if (demoEl) demoEl.classList.add('hidden');
+        let video = document.getElementById('live-video');
+        if (!video) {
+          video = document.createElement('video');
+          video.id = 'live-video';
+          video.autoplay = true;
+          video.playsInline = true;
+          video.muted = true;
+          video.style.width = '100%';
+          video.style.height = '100%';
+          video.style.objectFit = 'cover';
+          if (cameraArea) cameraArea.appendChild(video);
+        }
+        video.srcObject = stream;
+        usingDemo = false;
+        if (detectedText) detectedText.textContent = 'Camera active — analyzing...';
+        
+        detectionIndex = 0;
+        detectionInterval = setInterval(()=>{
+          if (detectionIndex < demoSequence.length) {
+            if (detectedText) detectedText.textContent = demoSequence[detectionIndex];
+            detectionIndex++;
+          } else {
+            clearInterval(detectionInterval);
+            detectionInterval = null;
+            if (detectedText) detectedText.textContent = 'Finished (demo)';
+          }
+        }, 1800);
+      } catch (err) {
+       
+        if (detectedText) detectedText.textContent = 'Permission denied or camera error — using demo.';
+        usingDemo = true;
       }
-    }, 1800);
+    } else {
+      if (detectedText) detectedText.textContent = 'Camera not supported — using demo.';
+    }
+
+    if (usingDemo) {
+      
+      detectionIndex = 0;
+      detectionInterval = setInterval(()=>{
+        if (detectionIndex < demoSequence.length) {
+          if (detectedText) detectedText.textContent = demoSequence[detectionIndex];
+          detectionIndex++;
+        } else {
+          clearInterval(detectionInterval);
+          detectionInterval = null;
+          if (detectedText) detectedText.textContent = 'Finished (demo)';
+        }
+      }, 1800);
+    }
   });
 
-  if (stopCamera) stopCamera.addEventListener('click', ()=>{
-    if (detectionInterval) clearInterval(detectionInterval);
-    startCamera.classList.remove('hidden');
-    stopCamera.classList.add('hidden');
+  if (stopCameraBtn) stopCameraBtn.addEventListener('click', ()=>{
+    
+    if (detectionInterval) { clearInterval(detectionInterval); detectionInterval = null; }
+    
+    const video = document.getElementById('live-video');
+    if (video && video.srcObject) {
+      const stream = video.srcObject;
+      if (stream.getTracks) stream.getTracks().forEach(t => t.stop());
+      video.srcObject = null;
+      video.remove(); 
+      const demoEl = document.getElementById('camera-demo');
+      if (demoEl) demoEl.classList.remove('hidden');
+    }
+    if (startCameraBtn) startCameraBtn.classList.remove('hidden');
+    stopCameraBtn.classList.add('hidden');
     if (detectedText) detectedText.textContent = 'Demo stopped';
   });
 
-  if (resetDetection) resetDetection.addEventListener('click', ()=>{
-    if (detectionInterval) clearInterval(detectionInterval);
+  if (resetDetectionBtn) resetDetectionBtn.addEventListener('click', ()=>{
+    if (detectionInterval) { clearInterval(detectionInterval); detectionInterval = null; }
     detectionIndex = 0;
     if (detectedText) detectedText.textContent = 'Start camera to begin detection';
   });
 
+ 
   const lang = document.getElementById('lang-select');
   const dark = document.getElementById('dark-mode');
   const fs = document.getElementById('font-size');
@@ -227,6 +391,33 @@ document.addEventListener('DOMContentLoaded', () => {
     dark.addEventListener('change', (e)=>{
       if (dark.checked) document.body.classList.add('dark');
       else document.body.classList.remove('dark');
+    });
+  }
+
+  
+  window.addEventListener('beforeunload', () => {
+    mockTimers.forEach(t=>clearTimeout(t));
+    mockTimers = [];
+    if (mockIntervalHandle) { clearInterval(mockIntervalHandle); mockIntervalHandle = null; }
+    if (detectionInterval) { clearInterval(detectionInterval); detectionInterval = null; }
+    
+    const video = document.getElementById('live-video');
+    if (video && video.srcObject) {
+      const s = video.srcObject;
+      if (s.getTracks) s.getTracks().forEach(t => t.stop());
+    }
+  });
+  const clearBtn = document.getElementById("clear-symbols");
+  
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (typeof constructed !== 'undefined' && constructed) {
+        constructed.textContent = "Selected phrase will appear here";
+      } else {
+        
+        const el = document.getElementById("constructed-text");
+        if (el) el.textContent = "Selected phrase will appear here";
+      }
     });
   }
 
