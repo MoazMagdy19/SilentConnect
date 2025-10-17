@@ -130,19 +130,38 @@
       <h3>Symbols to Voice</h3>
       <p class="muted">Pick symbols to build a message</p>
 
-      <div class="panel">
-        <div class="symbol-grid">
-          <button class="symbol">👋<span>hello</span></button>
-          <button class="symbol">🙏<span>thank you</span></button>
-          <button class="symbol">✋<span>help</span></button>
-          <button class="symbol">🏠<span>home</span></button>
-          <button class="symbol">☕<span>coffee</span></button>
-        </div>
-        <div id="constructed-text" class="constructed muted">Selected phrase will appear here</div>
-        <div class="mt-12">
-          <button id="speak-symbols" class="btn primary">🔊 Speak</button>
-        </div>
-      </div>
+      <div class="panel-symbols" id="symbols-panel">
+  
+  <div id="constructed-text" class="constructed muted">
+    <div class="constructed-inner">Selected phrase will appear here</div>
+  </div>
+
+  
+  <div class="symbol-grid" id="symbol-grid">
+   
+    <button class="symbol" data-word="hello"><span class="sym-emoji">👋</span><span class="sym-text">hello</span></button>
+    <button class="symbol" data-word="thank you"><span class="sym-emoji">🙏</span><span class="sym-text">thank you</span></button>
+    <button class="symbol" data-word="help"><span class="sym-emoji">✋</span><span class="sym-text">help</span></button>
+    <button class="symbol" data-word="home"><span class="sym-emoji">🏠</span><span class="sym-text">home</span></button>
+    <button class="symbol" data-word="coffee"><span class="sym-emoji">☕</span><span class="sym-text">coffee</span></button>
+    <button class="symbol" data-word="car"><span class="sym-emoji">🚗</span><span class="sym-text">car</span></button>
+    <button class="symbol" data-word="food"><span class="sym-emoji">🍎</span><span class="sym-text">food</span></button>
+    <button class="symbol" data-word="water"><span class="sym-emoji">💧</span><span class="sym-text">water</span></button>
+    <button class="symbol" data-word="sleep"><span class="sym-emoji">🛌</span><span class="sym-text">sleep</span></button>
+    <button class="symbol" data-word="doctor"><span class="sym-emoji">👨‍⚕</span><span class="sym-text">doctor</span></button>
+    <button class="symbol" data-word="call"><span class="sym-emoji">📞</span><span class="sym-text">call</span></button>
+    <button class="symbol" data-word="urgent"><span class="sym-emoji">❗</span><span class="sym-text">urgent</span></button>
+    <button class="symbol" data-word="yes"><span class="sym-emoji">✅</span><span class="sym-text">yes</span></button>
+    <button class="symbol" data-word="no"><span class="sym-emoji">❌</span><span class="sym-text">no</span></button>
+    <button class="symbol" data-word="please"><span class="sym-emoji">🙏🏻</span><span class="sym-text">please</span></button>
+    <button class="symbol" data-word="sorry"><span class="sym-emoji">😔</span><span class="sym-text">sorry</span></button>
+  </div>
+
+  <div class="mt-12">
+    <button id="speak-symbols" class="btn primary">🔊 Speak</button>
+    <button id="clear-symbols" class="btn ghost" style="margin-left:8px">✖ Clear</button>
+  </div>
+</div>
     </section>
 
     <section id="ai-knowledge" class="view hidden">
