@@ -93,16 +93,49 @@ document.addEventListener('DOMContentLoaded', () => {
     if (status) status.textContent = 'Listening...';
     if (symbolsArea) {
       symbolsArea.innerHTML = '';
-      
+
       symbolsArea.style.position = symbolsArea.style.position || 'relative';
     }
     animateWave(true);
 
-    const seq = [
-      {text:'hello', delay:800},
-      {text:'I need help', delay:1800},
-      {text:'going home', delay:3000}
+    const sentencePool = [
+      'Hello, how are you?',
+      'I need help please',
+      'I am going home now',
+      'Yes, please',
+      'No, thank you',
+      'I want some water',
+      'I need food',
+      'Call the doctor',
+      'This is urgent help',
+      'Thank you very much',
+      'I am sorry',
+      'Please help me',
+      'I am going to the bathroom',
+      'I want to eat food',
+      'I want to drink coffee',
+      'I have money',
+      'I want to read a book',
+      'Family time is important',
+      'Call the police for help',
+      'There is a fire emergency',
+      'I need an ambulance',
+      'The dog is barking',
+      'The cat is sleeping',
+      'I need medicine please',
+      'I want to make a phone call',
+      'It is time to sleep',
+      'Please open the door',
+      'Yes',
+      'No'
     ];
+
+    // Shuffle the pool and pick 3 random sentences
+    const shuffled = sentencePool.sort(() => 0.5 - Math.random());
+    const seq = shuffled.slice(0, 3).map((text, index) => ({
+      text: text,
+      delay: 800 + index * 1200
+    }));
 
     seq.forEach((s) => {
       const t = setTimeout(()=> {
@@ -111,10 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
       mockTimers.push(t);
     });
 
-    
+
     mockTimers.push(setTimeout(()=> { stopMockRecognition(); }, 4200));
 
-    
+
     mockIntervalHandle = setInterval(()=>{ if(listening) animateWave(true); }, 150);
   }
 
@@ -137,12 +170,31 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (lw.includes('coffee')) emoji = '☕';
       else if (lw.includes('car')) emoji = '🚗';
       else if (lw.includes('water')) emoji = '💧';
-      else if (lw.includes('food') || lw.includes('eat')) emoji = '🍎';
+      else if (lw.includes('food')) emoji = '🍎';
+      else if (lw.includes('eat')) emoji = '🍽️';
       else if (lw.includes('sleep')) emoji = '🛌';
       else if (lw.includes('doctor')|| lw.includes('hospital')) emoji = '👨‍⚕';
       else if (lw.includes('call')) emoji = '📞';
       else if (lw.includes('urgent') || lw.includes('emergency')) emoji = '❗';
       else if (lw.includes('going') || lw.includes('go')) emoji = '➡';
+      else if (lw.includes('door')) emoji = '🚪';
+      else if (lw.includes('bathroom')) emoji = '🛁';
+      else if (lw.includes('drink')) emoji = '🥤';
+      else if (lw.includes('phone')) emoji = '📱';
+      else if (lw.includes('medicine')) emoji = '💊';
+      else if (lw.includes('dog')) emoji = '🐕';
+      else if (lw.includes('cat')) emoji = '🐱';
+      else if (lw.includes('ambulance')) emoji = '🚑';
+      else if (lw.includes('fire')) emoji = '🔥';
+      else if (lw.includes('police')) emoji = '🚨';
+      else if (lw.includes('family')) emoji = '👨‍👩‍👧‍👦';
+      else if (lw.includes('time')) emoji = '⏰';
+      else if (lw.includes('money')) emoji = '💰';
+      else if (lw.includes('book')) emoji = '📚';
+      else if (lw.includes('yes')) emoji = '✅';
+      else if (lw.includes('no')) emoji = '❌';
+      else if (lw.includes('please')) emoji = '🙏🏻';
+      else if (lw.includes('sorry')) emoji = '😔';
     
       item.innerHTML = `<div class="symbol-emoji">${emoji}</div><div class="symbol-label">${w}</div>`;
     
@@ -281,7 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let detectionIndex = 0;
   let detectionInterval = null;
   const demoSequence = ["Hello","Thank you","Help me","I need assistance","Good morning"];
-
   if (startCameraBtn) startCameraBtn.addEventListener('click', async ()=> {
    
     startCameraBtn.classList.add('hidden');
