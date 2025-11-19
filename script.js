@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnListen) btnListen.addEventListener('click', () => showView('speech-to-symbols'));
   if (btnLive) btnLive.addEventListener('click', () => showView('live-sign-detection'));
-  if (btnSymbols) btnSymbols.addEventListener('click', () => showView('symbols-to-voice'));
+  if (btnSymbols) btnSymbols.addEventListener('click', () => showView('symbols-library'));
   if (btnAbout) btnAbout.addEventListener('click', () => showView('about'));
 
   document.querySelectorAll('[data-back]').forEach(b => {
@@ -472,5 +472,90 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  let customSymbols = JSON.parse(localStorage.getItem('customSymbols')) || [];
+
+  function renderLibrary() {
+    const libraryGrid = document.getElementById('library-grid');
+    if (!libraryGrid) return;
+
+    const defaultSymbols = Array.from(document.querySelectorAll('#symbol-grid .symbol')).map(btn => ({
+      emoji: btn.querySelector('.sym-emoji').textContent,
+      meaning: btn.querySelector('.sym-text').textContent
+    }));
+
+    const allSymbols = [...defaultSymbols, ...customSymbols];
+
+    libraryGrid.innerHTML = allSymbols.map((symbol, index) => `
+      <div class="library-symbol" data-index="${index}">
+        <div class="symbol-emoji">${symbol.emoji}</div>
+        <div class="symbol-label">${symbol.meaning}</div>
+        ${index >= defaultSymbols.length ? '<button class="delete-symbol">×</button>' : ''}
+      </div>
+    `).join('');
+
+    libraryGrid.querySelectorAll('.delete-symbol').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(e.target.closest('.library-symbol').dataset.index) - defaultSymbols.length;
+        customSymbols.splice(index, 1);
+        localStorage.setItem('customSymbols', JSON.stringify(customSymbols));
+        renderLibrary();
+      });
+    });
+  }
+
+  const addSymbolBtn = document.getElementById('add-symbol-btn');
+  const newEmojiInput = document.getElementById('new-emoji');
+  const newMeaningInput = document.getElementById('new-meaning');
+
+  function isEmoji(str) {
+    const emojiRegex = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1f926}-\u{1f937}]|[\u{10000}-\u{10FFFF}]|[\u{1f1e6}-\u{1f1ff}]|[\u{1f191}-\u{1f251}]|[\u{1f004}]|[\u{1f0cf}]|[\u{1f170}-\u{1f171}]|[\u{1f17e}-\u{1f17f}]|[\u{1f18e}]|[\u{3030}]|[\u{2b50}]|[\u{2b55}]|[\u{2934}-\u{2935}]|[\u{2b05}-\u{2b07}]|[\u{2b1b}-\u{2b1c}]|[\u{3297}]|[\u{3299}]|[\u{303d}]|[\u{00a9}]|[\u{00ae}]|[\u{2122}]|[\u{23f3}]|[\u{24c2}]|[\u{23e9}-\u{23ef}]|[\u{25b6}]|[\u{23f8}-\u{23fa}]/u;
+    return emojiRegex.test(str) && str.length <= 2;
+  }
+
+  if (addSymbolBtn) {
+    addSymbolBtn.addEventListener('click', () => {
+      const emoji = newEmojiInput.value.trim();
+      const meaning = newMeaningInput.value.trim();
+
+      if (!emoji) {
+        alert('Please enter an emoji.');
+        return;
+      }
+      if (!isEmoji(emoji)) {
+        alert('Please enter a valid emoji only.');
+        return;
+      }
+      if (!meaning) {
+        alert('Please enter the meaning.');
+        return;
+      }
+
+      const defaultSymbols = Array.from(document.querySelectorAll('#symbol-grid .symbol')).map(btn => ({
+        emoji: btn.querySelector('.sym-emoji').textContent,
+        meaning: btn.querySelector('.sym-text').textContent
+      }));
+      const allSymbols = [...defaultSymbols, ...customSymbols];
+
+      const exists = allSymbols.some(symbol => symbol.emoji === emoji);
+      if (exists) {
+        alert('This emoji already exists in the library.');
+        return;
+      }
+
+      customSymbols.push({ emoji, meaning });
+      localStorage.setItem('customSymbols', JSON.stringify(customSymbols));
+      newEmojiInput.value = '';
+      newMeaningInput.value = '';
+      renderLibrary();
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-screen="symbols-library"]') || e.target.id === 'btn-symbols') {
+      setTimeout(renderLibrary, 100); 
+    }
+  });
 
 });
