@@ -76,6 +76,34 @@
         <button id="btn-symbols" class="btn ghost">🗂️ Symbols</button>
       </div>
     </section>
+
+    <section id="symbols-library" class="view hidden">
+      <div class="back-row">
+        <button class="btn-back" data-back aria-label="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-right:8px">
+            <path d="M15 18l-6-6 6-6" stroke="#0b64d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <h3>Symbols Library</h3>
+      <p class="muted">Manage your symbols and add new ones</p>
+
+      <div class="panel">
+        <h4>All Symbols</h4>
+        <div id="library-grid" class="symbol-grid">
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>Add New Symbol</h4>
+        <div class="add-symbol-form">
+          <input type="text" id="new-emoji" placeholder="Emoji (e.g. 😊)" maxlength="2">
+          <input type="text" id="new-meaning" placeholder="Meaning (e.g. happy)">
+          <button id="add-symbol-btn" class="btn primary">➕ Add Symbol</button>
+        </div>
+      </div>
+    </section>
     
     <section id="speech-to-symbols" class="view hidden">
       <div class="back-row">
