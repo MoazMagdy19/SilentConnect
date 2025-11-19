@@ -459,13 +459,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   const clearBtn = document.getElementById("clear-symbols");
-  
+
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
+      constructedPhrase = [];
       if (typeof constructed !== 'undefined' && constructed) {
         constructed.textContent = "Selected phrase will appear here";
       } else {
-        
+
         const el = document.getElementById("constructed-text");
         if (el) el.textContent = "Selected phrase will appear here";
       }
