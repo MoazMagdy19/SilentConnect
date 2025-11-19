@@ -8,7 +8,6 @@
   --radius:12px;
   --max-w:980px;
   --gap:14px;
-  background:rgb(130,90,50);
 }
 
 *{box-sizing:border-box}
@@ -253,7 +252,6 @@ ul{padding-left:18px}
   background:#fff;
   border:1px solid rgba(15,23,42,0.04);
   box-shadow: var(--card-shadow);
-  min-width:72px;
   cursor:pointer;
   transition: transform .14s ease, box-shadow .14s ease;
 }
