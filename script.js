@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+
+  document.addEventListener('DOMContentLoaded', () => {
   const splash = document.getElementById('splash');
   const app = document.getElementById('app');
   const splashDelay = 1400;
@@ -55,6 +56,44 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-back]').forEach(b => {
     b.addEventListener('click', () => showView('home'));
   });
+
+  // New read text button logic for live sign detection
+  const readTextBtn = document.getElementById('read-text-btn');
+  const detectedText = document.getElementById('detected-text');
+  let isSpeaking = false;
+  let utterance = null;
+
+  if (readTextBtn && detectedText && 'speechSynthesis' in window) {
+    readTextBtn.addEventListener('click', () => {
+      const textToRead = detectedText.textContent.trim();
+      if (!textToRead || textToRead === 'Start camera to begin detection' || textToRead === 'Finished (demo)') {
+        alert('No valid text to read.');
+        return;
+      }
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        readTextBtn.textContent = '🔊 Read Text';
+        return;
+      }
+
+      utterance = new SpeechSynthesisUtterance(textToRead);
+      isSpeaking = true;
+      readTextBtn.textContent = '⏹ Stop Reading';
+
+      utterance.onend = () => {
+        isSpeaking = false;
+        readTextBtn.textContent = '🔊 Read Text';
+      };
+      utterance.onerror = () => {
+        isSpeaking = false;
+        readTextBtn.textContent = '🔊 Read Text';
+        alert('An error occurred during speech synthesis.');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    });
+  }
 
   const micToggle = document.getElementById('mic-toggle');
   const symbolsArea = document.getElementById('symbols-area'); 
@@ -328,7 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const startCameraBtn = document.getElementById('start-camera');
   const stopCameraBtn = document.getElementById('stop-camera');
   const resetDetectionBtn = document.getElementById('reset-detection');
-  const detectedText = document.getElementById('detected-text');
 
   let detectionIndex = 0;
   let detectionInterval = null;
@@ -375,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
             detectionInterval = null;
             if (detectedText) detectedText.textContent = 'Finished (demo)';
           }
-        }, 1800);
+        }, 4000);
       } catch (err) {
        
         if (detectedText) detectedText.textContent = 'Permission denied or camera error — using demo.';
