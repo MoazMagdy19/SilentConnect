@@ -1,16 +1,377 @@
 
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const splash = document.getElementById('splash');
   const app = document.getElementById('app');
   const splashDelay = 1400;
 
-  const startNow = () => {
-    if (splash) splash.classList.add('hidden');
-    if (app) app.classList.remove('hidden');
-    showView('home');
+  // Translation dictionary
+  const translations = {
+    english: {
+      home_title: 'Home',
+      home_sub: 'Choose how you\'d like to communicate today',
+      speech_to_symbols_title: 'Speech to Symbols',
+      speech_to_symbols_sub: 'Speak and see symbols appear',
+      symbols_to_voice_title: 'Symbols to Voice',
+      symbols_to_voice_sub: 'Transform symbols into speech',
+      ai_knowledge_title: 'AI Knowledge',
+      ai_knowledge_sub: 'Learn and get smart assistance',
+      live_sign_detection_title: 'Live Sign Detection',
+      live_sign_detection_sub: 'Real-time sign language translation',
+      settings_title: 'Settings',
+      settings_sub: 'Customize your experience',
+      about_title: 'About SilentConnect',
+      about_sub: 'Learn more about the project',
+      welcome_back: 'Welcome back!',
+      choose_communication: 'Choose how you would like to communicate today',
+      card_speech_to_symbols_title: 'Speech to Symbols',
+      card_speech_to_symbols_desc: 'Convert speech to visual symbols',
+      card_symbols_to_voice_title: 'Symbols to Voice',
+      card_symbols_to_voice_desc: 'Transform symbols into speech',
+      card_ai_knowledge_title: 'AI Knowledge',
+      card_ai_knowledge_desc: 'Smart tips and assistance',
+      card_settings_title: 'Settings',
+      card_settings_desc: 'Customize your experience',
+      start_listening: '🎤 Start Listening',
+      live_sign_detection: '📷 Live Sign Detection',
+      symbols_btn: '🗂️ Symbols',
+      back_btn: 'Back',
+      symbols_library_title: 'Symbols Library',
+      symbols_library_sub: 'Manage your symbols and add new ones',
+      all_symbols_title: 'All Symbols',
+      add_new_symbol_title: 'Add New Symbol',
+      add_symbol_emoji_placeholder: 'Emoji (e.g. 😊)',
+      add_symbol_meaning_placeholder: 'Meaning (e.g. happy)',
+      add_symbol_button: '➕ Add Symbol',
+      speech_to_symbols_main_title: 'Speech to Symbols',
+      speech_to_symbols_main_sub: 'Speak and see symbols appear',
+      recognized_symbols_title: 'Recognized Symbols',
+      symbols_will_appear: 'Symbols will appear here as you speak',
+      symbols_to_voice_title: 'Symbols to Voice',
+      symbols_to_voice_sub: 'Pick symbols to build a message',
+      selected_phrase_placeholder: 'Selected phrase will appear here',
+      ai_knowledge_main_title: 'AI Knowledge',
+      ai_knowledge_main_sub: 'Learn and get smart assistance',
+      tips_tab: 'Tips',
+      emergency_tab: 'Emergency',
+      signs_tab: 'Signs',
+      ai_assistant_welcome: 'Hi! I\'m here to help. What would you like assistance with?',
+      live_sign_detection_main_title: 'Live Sign Detection',
+      live_sign_detection_main_sub: 'Real-time sign language translation',
+      detected_text_title: 'Detected Text',
+      start_detection: '📷 Start Detection',
+      stop_btn: '⏹ Stop',
+      reset_detection: '↻ Reset',
+      tips_for_better_detection: 'Tips for Better Detection',
+      tips_list_1: 'Ensure good lighting and clear background',
+      tips_list_2: 'Keep hands within the camera frame',
+      primary_language_label: 'Primary Language',
+      dark_mode_label: 'Dark Mode',
+      font_size_label: 'Font Size',
+      call_me: 'Call someone for me',
+      need_medical_help: 'I need medical help',
+      yes: 'Yes',
+      no: 'No'
+    },
+    arabic: {
+      home_title: 'الرئيسية',
+      home_sub: 'اختر كيف تود التواصل اليوم',
+      speech_to_symbols_title: 'من الكلام إلى الرموز',
+      speech_to_symbols_sub: 'تحدث وشاهد الرموز تظهر',
+      symbols_to_voice_title: 'من الرموز إلى الصوت',
+      symbols_to_voice_sub: 'تحويل الرموز إلى كلام',
+      ai_knowledge_title: 'المعرفة بالذكاء الاصطناعي',
+      ai_knowledge_sub: 'نصائح ومساعدة ذكية',
+      live_sign_detection_title: 'كشف الإشارات الحية',
+      live_sign_detection_sub: 'ترجمة لغة الإشارة في الوقت الحقيقي',
+      settings_title: 'الإعدادات',
+      settings_sub: 'خصص تجربتك',
+      about_title: 'حول SilentConnect',
+      about_sub: 'تعرف أكثر على المشروع',
+      welcome_back: 'مرحباً مجدداً!',
+      choose_communication: 'اختر كيف تود التواصل اليوم',
+      card_speech_to_symbols_title: 'من الكلام إلى الرموز',
+      card_speech_to_symbols_desc: 'تحويل الكلام إلى رموز بصرية',
+      card_symbols_to_voice_title: 'من الرموز إلى الصوت',
+      card_symbols_to_voice_desc: 'تحويل الرموز إلى كلام',
+      card_ai_knowledge_title: 'المعرفة بالذكاء الاصطناعي',
+      card_ai_knowledge_desc: 'نصائح ومساعدات ذكية',
+      card_settings_title: 'الإعدادات',
+      card_settings_desc: 'خصص تجربتك',
+      start_listening: '🎤 بدء الاستماع',
+      live_sign_detection: '📷 كشف الإشارة الحية',
+      symbols_btn: '🗂️ الرموز',
+      back_btn: 'عودة',
+      symbols_library_title: 'مكتبة الرموز',
+      symbols_library_sub: 'إدارة الرموز الخاصة بك وإضافة المزيد',
+      all_symbols_title: 'جميع الرموز',
+      add_new_symbol_title: 'إضافة رمز جديد',
+      add_symbol_emoji_placeholder: 'رمز تعبيري (مثلا 😊)',
+      add_symbol_meaning_placeholder: 'المعنى (مثلا سعيد)',
+      add_symbol_button: '➕ إضافة رمز',
+      speech_to_symbols_main_title: 'من الكلام إلى الرموز',
+      speech_to_symbols_main_sub: 'تحدث وشاهد الرموز تظهر',
+      recognized_symbols_title: 'الرموز المعترف بها',
+      symbols_will_appear: 'ستظهر الرموز هنا أثناء حديثك',
+      symbols_to_voice_title: 'من الرموز إلى الصوت',
+      symbols_to_voice_sub: 'اختر الرموز لبناء جملة',
+      selected_phrase_placeholder: 'الجملة المختارة ستظهر هنا',
+      ai_knowledge_main_title: 'المعرفة بالذكاء الاصطناعي',
+      ai_knowledge_main_sub: 'تعلم واحصل على مساعدة ذكية',
+      tips_tab: 'نصائح',
+      emergency_tab: 'حالات طوارئ',
+      signs_tab: 'الإشارات',
+      ai_assistant_welcome: 'مرحباً! أنا هنا للمساعدة. ماذا ترغب في المساعدة به؟',
+      live_sign_detection_main_title: 'كشف الإشارات الحية',
+      live_sign_detection_main_sub: 'ترجمة لغة الإشارة في الوقت الحقيقي',
+      detected_text_title: 'النص المكتشف',
+      start_detection: '📷 بدء الكشف',
+      stop_btn: '⏹ إيقاف',
+      reset_detection: '↻ إعادة تعيين',
+      tips_for_better_detection: 'نصائح لتحسين الكشف',
+      tips_list_1: 'تأكد من وجود إضاءة جيدة وخلفية واضحة',
+      tips_list_2: 'حافظ على يديك ضمن إطار الكاميرا',
+      primary_language_label: 'اللغة الأساسية',
+      dark_mode_label: 'وضع الظلام',
+      font_size_label: 'حجم الخط',
+      call_me: 'اتصل بشخص ما',
+      need_medical_help: 'أحتاج مساعدة طبية',
+      yes: 'نعم',
+      no: 'لا'
+    },
+    french: {
+      home_title: 'Accueil',
+      home_sub: 'Choisissez comment vous souhaitez communiquer aujourd\'hui',
+      speech_to_symbols_title: 'Parole en symboles',
+      speech_to_symbols_sub: 'Parlez et voyez les symboles apparaître',
+      symbols_to_voice_title: 'Symboles en voix',
+      symbols_to_voice_sub: 'Transformez les symboles en parole',
+      ai_knowledge_title: 'Connaissances IA',
+      ai_knowledge_sub: 'Conseils intelligents et assistance',
+      live_sign_detection_title: 'Détection des signes en direct',
+      live_sign_detection_sub: 'Traduction en temps réel du langage des signes',
+      settings_title: 'Paramètres',
+      settings_sub: 'Personnalisez votre expérience',
+      about_title: 'À propos de SilentConnect',
+      about_sub: 'En savoir plus sur le projet',
+      welcome_back: 'Bon retour!',
+      choose_communication: 'Choisissez comment vous souhaitez communiquer aujourd\'hui',
+      card_speech_to_symbols_title: 'Parole en symboles',
+      card_speech_to_symbols_desc: 'Convertir la parole en symboles visuels',
+      card_symbols_to_voice_title: 'Symboles en voix',
+      card_symbols_to_voice_desc: 'Transformer les symboles en parole',
+      card_ai_knowledge_title: 'Connaissances IA',
+      card_ai_knowledge_desc: 'Conseils et assistance intelligents',
+      card_settings_title: 'Paramètres',
+      card_settings_desc: 'Personnalisez votre expérience',
+      start_listening: '🎤 Commencer à écouter',
+      live_sign_detection: '📷 Détection en direct des signes',
+      symbols_btn: '🗂️ Symboles',
+      back_btn: 'Retour',
+      symbols_library_title: 'Bibliothèque de symboles',
+      symbols_library_sub: 'Gérez vos symboles et ajoutez-en de nouveaux',
+      all_symbols_title: 'Tous les symboles',
+      add_new_symbol_title: 'Ajouter un nouveau symbole',
+      add_symbol_emoji_placeholder: 'Émoji (ex. 😊)',
+      add_symbol_meaning_placeholder: 'Signification (ex. heureux)',
+      add_symbol_button: '➕ Ajouter un symbole',
+      speech_to_symbols_main_title: 'Parole en symboles',
+      speech_to_symbols_main_sub: 'Parlez et voyez les symboles apparaître',
+      recognized_symbols_title: 'Symboles reconnus',
+      symbols_will_appear: 'Les symboles apparaîtront ici pendant que vous parlez',
+      symbols_to_voice_title: 'Symboles en voix',
+      symbols_to_voice_sub: 'Choisissez des symboles pour construire un message',
+      selected_phrase_placeholder: 'La phrase sélectionnée apparaîtra ici',
+      ai_knowledge_main_title: 'Connaissances IA',
+      ai_knowledge_main_sub: 'Apprenez et obtenez une assistance intelligente',
+      tips_tab: 'Conseils',
+      emergency_tab: 'Urgence',
+      signs_tab: 'Signes',
+      ai_assistant_welcome: 'Salut! Je suis là pour aider. Que souhaitez-vous?',
+      live_sign_detection_main_title: 'Détection des signes en direct',
+      live_sign_detection_main_sub: 'Traduction en temps réel du langage des signes',
+      detected_text_title: 'Texte détecté',
+      start_detection: '📷 Démarrer la détection',
+      stop_btn: '⏹ Arrêter',
+      reset_detection: '↻ Réinitialiser',
+      tips_for_better_detection: 'Conseils pour une meilleure détection',
+      tips_list_1: 'Assurez-vous d\'une bonne lumière et d\'un arrière-plan clair',
+      tips_list_2: 'Gardez les mains dans le cadre de la caméra',
+      primary_language_label: 'Langue principale',
+      dark_mode_label: 'Mode sombre',
+      font_size_label: 'Taille de la police',
+      call_me: 'Appelle quelqu\'un pour moi',
+      need_medical_help: 'J\'ai besoin d\'aide médicale',
+      yes: 'Oui',
+      no: 'Non'
+    }
   };
 
-  setTimeout(startNow, splashDelay);
+  let currentLang = 'english';
+
+  // Function to apply translations to the UI
+  function applyTranslations(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    // Update main page lang attribute and direction
+    const htmlEl = document.documentElement;
+    htmlEl.lang = lang === 'arabic' ? 'ar' : (lang === 'french' ? 'fr' : 'en');
+    htmlEl.dir = lang === 'arabic' ? 'rtl' : 'ltr';
+
+    // Update texts in various UI elements
+    // Home section
+    const welcomeEl = document.querySelector('.welcome');
+    if (welcomeEl) welcomeEl.textContent = t.welcome_back;
+    const subMuted = document.querySelector('.sub.muted');
+    if (subMuted) subMuted.textContent = t.choose_communication;
+
+    // Cards on home page
+    const cards = document.querySelectorAll('.cards .card');
+    if (cards.length >= 4) {
+      cards[0].querySelector('h4').textContent = t.card_speech_to_symbols_title;
+      cards[0].querySelector('p.muted').textContent = t.card_speech_to_symbols_desc;
+
+      cards[1].querySelector('h4').textContent = t.card_symbols_to_voice_title;
+      cards[1].querySelector('p.muted').textContent = t.card_symbols_to_voice_desc;
+
+      cards[2].querySelector('h4').textContent = t.card_ai_knowledge_title;
+      cards[2].querySelector('p.muted').textContent = t.card_ai_knowledge_desc;
+
+      cards[3].querySelector('h4').textContent = t.card_settings_title;
+      cards[3].querySelector('p.muted').textContent = t.card_settings_desc;
+    }
+
+    // Buttons on home page
+    const btnListen = document.getElementById('btn-listen');
+    if (btnListen) btnListen.textContent = t.start_listening;
+    const btnLive = document.getElementById('btn-live');
+    if (btnLive) btnLive.textContent = t.live_sign_detection;
+    const btnSymbols = document.getElementById('btn-symbols');
+    if (btnSymbols) btnSymbols.textContent = t.symbols_btn;
+
+    // Back buttons
+    document.querySelectorAll('.btn-back').forEach(btn => {
+      btn.textContent = t.back_btn;
+    });
+
+    // Symbols Library section
+    const symbolsLibraryTitle = document.querySelector('#symbols-library h3');
+    if (symbolsLibraryTitle) symbolsLibraryTitle.textContent = t.symbols_library_title;
+    const symbolsLibrarySub = document.querySelector('#symbols-library p.muted');
+    if (symbolsLibrarySub) symbolsLibrarySub.textContent = t.symbols_library_sub;
+    const allSymbolsTitle = document.querySelectorAll('#symbols-library .panel h4')[0];
+    if (allSymbolsTitle) allSymbolsTitle.textContent = t.all_symbols_title;
+    const addNewSymbolTitle = document.querySelectorAll('#symbols-library .panel h4')[1];
+    if (addNewSymbolTitle) addNewSymbolTitle.textContent = t.add_new_symbol_title;
+    const emojiInput = document.getElementById('new-emoji');
+    if (emojiInput) emojiInput.placeholder = t.add_symbol_emoji_placeholder;
+    const meaningInput = document.getElementById('new-meaning');
+    if (meaningInput) meaningInput.placeholder = t.add_symbol_meaning_placeholder;
+    const addSymbolBtn = document.getElementById('add-symbol-btn');
+    if (addSymbolBtn) addSymbolBtn.textContent = t.add_symbol_button;
+
+    // Speech to Symbols section
+    const speechSymbolsTitle = document.querySelector('#speech-to-symbols h3');
+    if (speechSymbolsTitle) speechSymbolsTitle.textContent = t.speech_to_symbols_main_title;
+    const speechSymbolsSub = document.querySelector('#speech-to-symbols p.muted');
+    if (speechSymbolsSub) speechSymbolsSub.textContent = t.speech_to_symbols_main_sub;
+    const recognizedTitle = document.querySelector('#speech-to-symbols .panel h4');
+    if (recognizedTitle) recognizedTitle.textContent = t.recognized_symbols_title;
+    const symbolsArea = document.getElementById('symbols-area');
+    if (symbolsArea && symbolsArea.textContent.includes('Symbols will appear')) symbolsArea.textContent = t.symbols_will_appear;
+
+    // Symbols to Voice section
+    const symbolsToVoiceTitle = document.querySelector('#symbols-to-voice h3');
+    if (symbolsToVoiceTitle) symbolsToVoiceTitle.textContent = t.symbols_to_voice_title;
+    const symbolsToVoiceSub = document.querySelector('#symbols-to-voice p.muted');
+    if (symbolsToVoiceSub) symbolsToVoiceSub.textContent = t.symbols_to_voice_sub;
+    const constructedText = document.getElementById('constructed-text');
+    if (constructedText && constructedText.textContent.trim() === 'Selected phrase will appear here') {
+      constructedText.textContent = t.selected_phrase_placeholder;
+    }
+    const speakBtn = document.getElementById('speak-symbols');
+    if (speakBtn) speakBtn.textContent = '🔊 ' + (t.speak_button_text || 'Speak');
+
+    // AI Knowledge section
+    const aiKnowledgeTitle = document.querySelector('#ai-knowledge h3');
+    if (aiKnowledgeTitle) aiKnowledgeTitle.textContent = t.ai_knowledge_main_title;
+    const aiKnowledgeSub = document.querySelector('#ai-knowledge p.muted');
+    if (aiKnowledgeSub) aiKnowledgeSub.textContent = t.ai_knowledge_main_sub;
+    document.querySelectorAll('.tabs-head .tab')[0].textContent = t.tips_tab;
+    document.querySelectorAll('.tabs-head .tab')[1].textContent = t.emergency_tab;
+    document.querySelectorAll('.tabs-head .tab')[2].textContent = t.signs_tab;
+    const assistantPopup = document.getElementById('assistant-popup');
+    if (assistantPopup) {
+      const p = assistantPopup.querySelector('p.muted');
+      if (p) p.textContent = t.ai_assistant_welcome;
+    }
+
+    // Live Sign Detection section
+    const liveSignTitle = document.querySelector('#live-sign-detection h3');
+    if (liveSignTitle) liveSignTitle.textContent = t.live_sign_detection_main_title;
+    const liveSignSub = document.querySelector('#live-sign-detection p.muted');
+    if (liveSignSub) liveSignSub.textContent = t.live_sign_detection_main_sub;
+    const detectedTextTitle = document.querySelector('#live-sign-detection .detection-box strong');
+    if (detectedTextTitle) detectedTextTitle.textContent = t.detected_text_title;
+    const startCameraBtn = document.getElementById('start-camera');
+    if (startCameraBtn) startCameraBtn.textContent = t.start_detection;
+    const stopCameraBtn = document.getElementById('stop-camera');
+    if (stopCameraBtn) stopCameraBtn.textContent = t.stop_btn;
+    const resetDetBtn = document.getElementById('reset-detection');
+    if (resetDetBtn) resetDetBtn.textContent = t.reset_detection;
+    const tipsHeader = document.querySelector('#live-sign-detection .tips strong');
+    if (tipsHeader) tipsHeader.textContent = t.tips_for_better_detection;
+    const tipsListItems = document.querySelectorAll('#live-sign-detection .tips ul li');
+    if (tipsListItems.length >= 2) {
+      tipsListItems[0].textContent = t.tips_list_1;
+      tipsListItems[1].textContent = t.tips_list_2;
+    }
+
+    // Settings section
+    const settingsTitle = document.querySelector('#settings h3');
+    if (settingsTitle) settingsTitle.textContent = t.settings_title;
+    const settingsSub = document.querySelector('#settings p.muted');
+    if (settingsSub) settingsSub.textContent = t.settings_sub;
+    const primaryLangLabel = document.querySelector('#settings .setting-row label');
+    if (primaryLangLabel) primaryLangLabel.textContent = t.primary_language_label;
+    const darkModeLabel = document.querySelectorAll('#settings .setting-row label')[1];
+    if (darkModeLabel) darkModeLabel.textContent = t.dark_mode_label;
+    const fontSizeLabel = document.querySelectorAll('#settings .setting-row label')[2];
+    if (fontSizeLabel) fontSizeLabel.textContent = t.font_size_label;
+
+    // About section
+    const aboutTitle = document.querySelector('#about h3');
+    if (aboutTitle) aboutTitle.textContent = t.about_title;
+    const aboutSub = document.querySelector('#about p.muted');
+    if (aboutSub) aboutSub.textContent = t.about_sub;
+
+    // Buttons with static text
+    const backBtns = document.querySelectorAll('.back-row .btn-back');
+    backBtns.forEach(btn => btn.textContent = t.back_btn);
+
+  }
+
+  // Initial page load language
+  let savedLang = localStorage.getItem('selectedLanguage');
+  if (!savedLang) {
+    const browserLang = navigator.language || navigator.userLanguage;
+    if (browserLang.startsWith('ar')) savedLang = 'arabic';
+    else if (browserLang.startsWith('fr')) savedLang = 'french';
+    else savedLang = 'english';
+  }
+
+  applyTranslations(savedLang);
+
+  // Language selector listener
+  const langSelect = document.getElementById('lang-select');
+  if (langSelect) {
+    langSelect.value = savedLang;
+    langSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      applyTranslations(selected);
+      localStorage.setItem('selectedLanguage', selected);
+    });
+  }
 
   function showView(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
@@ -21,13 +382,13 @@
     const title = document.getElementById('screen-title');
     const sub = document.getElementById('screen-sub');
     const map = {
-      'home': ['Home', 'Choose how you\'d like to communicate today'],
-      'speech-to-symbols': ['Speech to Symbols','Speak and see symbols appear'],
-      'symbols-to-voice': ['Symbols to Voice','Transform symbols into speech'],
-      'ai-knowledge': ['AI Knowledge','Learn and get smart assistance'],
-      'live-sign-detection': ['Live Sign Detection','Real-time sign language translation'],
-      'settings': ['Settings','Customize your experience'],
-      'about': ['About SilentConnect','Learn more about the project']
+      'home': [translations[currentLang].home_title, translations[currentLang].home_sub],
+      'speech-to-symbols': [translations[currentLang].speech_to_symbols_title, translations[currentLang].speech_to_symbols_sub],
+      'symbols-to-voice': [translations[currentLang].symbols_to_voice_title, translations[currentLang].symbols_to_voice_sub],
+      'ai-knowledge': [translations[currentLang].ai_knowledge_title, translations[currentLang].ai_knowledge_sub],
+      'live-sign-detection': [translations[currentLang].live_sign_detection_title, translations[currentLang].live_sign_detection_sub],
+      'settings': [translations[currentLang].settings_title, translations[currentLang].settings_sub],
+      'about': [translations[currentLang].about_title, translations[currentLang].about_sub]
     };
     if (map[id]) {
       if (title) title.textContent = map[id][0];
